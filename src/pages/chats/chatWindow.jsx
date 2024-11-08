@@ -1,44 +1,252 @@
 import { FiPaperclip } from "react-icons/fi";
+import "../../components/css/custom.css";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { baseURL } from "../../app/api/baseUrl";
+import { useParams } from "react-router-dom";
+import Rodal from "rodal";
+import "rodal/lib/rodal.css";
+import { Link } from "react-router-dom";
 
-const messages = [
-  {
-    id: 1,
-    from: "Alex B.",
-    content:
-      "Доброе утро! Заинтересовал ваш проект, расскажите, пожалуйста, про него поподробнее",
-    time: "10:00",
-    sent: false,
-  },
-  {
-    id: 2,
-    from: "You",
-    content:
-      "Доброе утро! Завтра состоится онлайн-конференция, где вы сможете узнать подробности о предстоящем проекте и задать свои вопросы. Ссылка:",
-    time: "10:00",
-    sent: true,
-  },
-  {
-    id: 3,
-    from: "Alex B.",
-    content: "Отлично, договорились!",
-    time: "10:00",
-    sent: false,
-  },
-];
+const ChatWindow = (changer) => {
+  console.log(changer);
+  const { id } = useParams();
+  const [messages, setMessages] = useState([]);
+  const [memberDetail, setMemberDetail] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [visible, setVisible] = useState(false);
 
-const ChatWindow = () => {
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const hideModal = () => {
+    setVisible(false);
+  };
+  console.log(memberDetail);
+  useEffect(() => {
+    const fetchMemberDetails = async () => {
+      try {
+        const { data } = await axios.get(
+          `${baseURL}/chat/conversation/${id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        setMemberDetail(data);
+        setMessages(data.messages);
+      } catch (error) {
+        console.error("Error fetching member details:", error);
+      }
+    };
+
+    fetchMemberDetails();
+  }, [id]);
+
+  useEffect(() => {
+    const messageSocket = new WebSocket(
+      `wss://api.itbratrf.ru/ws/message/${id}/?token=${localStorage.getItem(
+        "accessToken"
+      )}`
+    );
+
+    messageSocket.onmessage = (event) => {
+      const receivedMessage = JSON.parse(event.data);
+      console.log("Received message:", receivedMessage);
+      setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+    };
+
+    return () => messageSocket.close();
+  }, [id]);
+  console.log(messages);
+
+  const sendMessage = () => {
+    console.log("Sending message:", newMessage);
+    if (newMessage.trim() === "") return;
+    const chatSocket = new WebSocket(
+      `wss://api.itbratrf.ru/ws/chat/${id}/?token=${localStorage.getItem(
+        "accessToken"
+      )}`
+    );
+    console.log("Chat socket:", chatSocket);
+
+    chatSocket.onopen = () => {
+      chatSocket.send(JSON.stringify({ message: newMessage, info: "" }));
+      setNewMessage("");
+    };
+  };
+
+  const messagesEndRef = useRef(null);
+
+  // Function to scroll to the bottom of the messages container
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  };
+
+  // Scroll to bottom on initial load and when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const formatLocalTime = (utcTimeStr) => {
+    const utcDate = new Date(utcTimeStr);
+    return utcDate.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const hard_skills =
+    Array.isArray(memberDetail) && memberDetail.length > 0
+      ? memberDetail[0]?.initiator?.resume?.[0]?.hard_skills?.[0]
+      : undefined;
+
+  console.log("memberDetail");
+  console.log(memberDetail);
+  console.log("memberDetail");
+
+  const text = hard_skills ? hard_skills.split(",") : [];
+
   return (
-    <div className="w-2/3 bg-[#111111] p-4 flex flex-col rounded-md h-screen">
-      <div className="flex items-center border-b border-gray-700 pb-4 mb-4 flex-shrink-0">
+    <div className="w-full bg-[#111111] px-4 pb-4 flex flex-col rounded-md h-[calc(100vh-60px)]">
+      <Rodal
+        visible={visible}
+        onClose={hideModal}
+        animation="zoom"
+        duration={500}
+        customStyles={{
+          width: "95%",
+          maxWidth: "700px",
+          height: "auto",
+          maxHeight: "50vh",
+          padding: "20px",
+          overflowY: "auto",
+          borderRadius: "10px",
+        }}
+      >
+        <div className="w-[95%] min-h-[230px] rounded-lg p-5">
+          {memberDetail ? (
+            <div>
+              <div className="w-full flex flex-col xl:flex-row md:gap-[80px]">
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-[100px] h-[100px] border-4 border-[#680202] rounded-full">
+                    <img
+                      className="w-[90px] h-[90px] rounded-full object-cover"
+                      src={memberDetail?.receiver?.resume[0]?.image}
+                      alt="profile"
+                    />
+                  </div>
+                  <div>
+                    <h2 className="text-[#5B0303] text-[clamp(16px,3vw,24px)] font-semibold]">
+                      {memberDetail?.receiver?.first_name}
+                    </h2>
+                    <span className="text-main-black text-[clamp(12px,3vw,20px) font-semibold]">
+                      {memberDetail?.receiver?.resume[0]?.heading.name}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <ul>
+                    <li>
+                      <span className="text-main-black text-[clamp(13px,3vw,20px)] font-semibold">
+                        Контактная информация:{" "}
+                        {memberDetail?.receiver?.resume[0]?.contact}
+                      </span>
+                    </li>
+                    <li>
+                      <span className="text-main-black text-[clamp(13px,3vw,20px)] font-semibold">
+                        Опыт работы:{" "}
+                        {memberDetail?.receiver?.resume[0]?.experience} лет
+                      </span>
+                    </li>
+                    <li>
+                      <span className="text-main-black text-[clamp(13px,3vw,20px)] font-semibold">
+                        Личные данные:{" "}
+                        {memberDetail?.receiver?.resume[0]?.description}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="flex gap-[100px] md:gap-[215px]">
+                <div>
+                  <h1 className="text-main-black text-[clamp(16px,3vw,24px)] font-bold">
+                    Навыки
+                  </h1>
+                  <span className="text-main-black text-[clamp(14px,3vw,16px)] font-light">
+                    Hard skills
+                    <div className="flex items-center gap-3">
+                      {text.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className={`${idx % 2 === 0 && "bg-main-black"} ${
+                            idx % 2 === 1 && "bg-[#4A2020]"
+                          } p-1 rounded-md`}
+                        >
+                          <span className="text-main-white">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </span>
+                </div>
+                <div className="mt-6 md:mt-10">
+                  <span className="text-main-black text-[clamp(14px,3vw,16px)] font-light">
+                    Soft skills
+                    <div className="p-1 bg-[#4A2020] text-main-white rounded-md">
+                      {memberDetail?.initiator?.resume[0]?.soft_skills}
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-3xl text-center my-10 font-bold">
+              На данный момент резюме нет
+            </p>
+          )}
+        </div>
+      </Rodal>
+      <div className="flex items-center border-b border-gray-700 pb-4 mb-4 flex-shrink-0 pt-3 relative">
         <div className="flex items-center">
-          <div className="h-10 w-10 rounded-full bg-green-500"></div>
-          <div className="ml-4">
-            <h2 className="font-bold text-lg">Alex B.</h2>
-            <span className="text-sm text-gray-400">Online</span>
+          <Link to={"/profile/chat/"} className="p-2 absolute top-4 left-[-20px]">
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 30 30"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.0408 15.1186C10.4527 14.5305 10.4527 13.5695 11.0408 12.9814L15.4979 8.5243C16.086 7.93619 17.047 7.93619 17.6351 8.5243C18.2232 9.11241 18.2232 10.0734 17.6351 10.6615L15.2967 13H23.7487C24.5564 13 25.2487 13.6923 25.2487 14.5C25.2487 15.3077 24.5564 16 23.7487 16H15.1625L17.5481 18.3856C18.1362 18.9737 18.1362 19.9347 17.5481 20.5228C16.96 21.1109 15.999 21.1109 15.4109 20.5228L11.0408 16.1527C10.7467 15.8586 10.5997 15.4293 10.5997 15C10.5997 14.5707 10.7467 14.1414 11.0408 13.8473V15.1186Z"
+                fill="#A3A3A3"
+              />
+            </svg>
+          </Link>
+          <div className="h-[58px] w-[58px] rounded-full ml-[20px]">
+            <img
+              className="w-full h-full rounded-full object-cover"
+              src={`https://api.itbratrf.ru${memberDetail?.sender_type?.resume[0]?.image}`}
+              alt=""
+            />
+          </div>
+          <div className="ml-2">
+            <h2 className="font-bold text-lg text-[#fff]">
+              {memberDetail?.sender_type?.first_name}{" "}
+              {memberDetail?.sender_type?.last_name}
+            </h2>
+            {/* <span className="text-sm text-gray-400">Online</span> */}
           </div>
         </div>
         <div className="ml-auto flex items-center space-x-2">
-          <button className="p-2 rounded bg-gray-800 hover:bg-gray-700">
+          <button
+            onClick={showModal}
+            className="p-2 rounded bg-gray-800 hover:bg-gray-700"
+          >
             <svg
               width="30"
               height="30"
@@ -56,7 +264,7 @@ const ChatWindow = () => {
               />
             </svg>
           </button>
-          <button className="p-2 rounded bg-gray-800 hover:bg-gray-700">
+          {/* <button className="p-2 rounded bg-gray-800 hover:bg-gray-700">
             <svg
               width="30"
               height="30"
@@ -69,8 +277,8 @@ const ChatWindow = () => {
                 fill="#A3A3A3"
               />
             </svg>
-          </button>
-          <button className="p-2 rounded bg-gray-800 hover:bg-gray-700">
+          </button> */}
+          {/* <button className="p-2 rounded bg-gray-800 hover:bg-gray-700">
             <svg
               width="30"
               height="30"
@@ -79,66 +287,58 @@ const ChatWindow = () => {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M15.0509 21.178C15.7116 21.178 16.3454 21.4405 16.8126 21.9077C17.2799 22.375 17.5424 23.0087 17.5424 23.6695C17.5424 24.3303 17.2799 24.964 16.8126 25.4313C16.3454 25.8985 15.7116 26.161 15.0509 26.161C14.3901 26.161 13.7563 25.8985 13.2891 25.4313C12.8218 24.964 12.5593 24.3303 12.5593 23.6695C12.5593 23.0087 12.8218 22.375 13.2891 21.9077C13.7563 21.4405 14.3901 21.178 15.0509 21.178ZM15.0509 12.4576C15.7116 12.4576 16.3454 12.7201 16.8126 13.1874C17.2799 13.6546 17.5424 14.2884 17.5424 14.9491C17.5424 15.6099 17.2799 16.2437 16.8126 16.7109C16.3454 17.1782 15.7116 17.4407 15.0509 17.4407C14.3901 17.4407 13.7563 17.1782 13.2891 16.7109C12.8218 16.2437 12.5593 15.6099 12.5593 14.9491C12.5593 14.2884 12.8218 13.6546 13.2891 13.1874C13.7563 12.7201 14.3901 12.4576 15.0509 12.4576ZM15.0509 3.73728C15.7116 3.73728 16.3454 3.99978 16.8126 4.46703C17.2799 4.93428 17.5424 5.56799 17.5424 6.22878C17.5424 6.88957 17.2799 7.52328 16.8126 7.99053C16.3454 8.45778 15.7116 8.72028 15.0509 8.72028C14.3901 8.72028 13.7563 8.45778 13.2891 7.99053C12.8218 7.52328 12.5593 6.88957 12.5593 6.22878C12.5593 5.56799 12.8218 4.93428 13.2891 4.46703C13.7563 3.99978 14.3901 3.73728 15.0509 3.73728Z"
+                d="M15.0509 21.178C15.7116 21.178 16.3454 21.4405 16.8126 21.9077C17.2799 22.375 17.5424 23.0087 17.5424 23.6695C17.5424 24.3303 17.2799 24.964 16.8126 25.4313C16.3454 25.8985 15.7116 26.161 15.0509 26.161C14.3901 26.161 13.7563 25.8985 13.2891 25.4313C12.8218 24.964 12.5593 24.3303 12.5593 23.6695C12.5593 23.0087 12.8218 22.375 13.2891 21.9077C13.7563 21.4405 14.3901 21.178 15.0509 21.178ZM15.0509 12.4576C15.7116 12.4576 16.3454 12.7201 16.8126 13.1874C17.2799 13.6546 17.5424 14.2884 17.5424 14.9491C17.5424 15.6099 17.2799 16.2437 16.8126 16.7109C16.3454 17.1782 15.7116 17.4407 15.0509 17.4407C14.3901 17.4407 13.7563 17.1782 13.2891 16.7109C12.8218 16.2437 12.5593 15.6099 12.5593 14.9491C12.5593 14.2884 12.8218 13.6546 13.2891 13.1874C13.7563 12.7201 14.3901 12.4576 15.0509 12.4576ZM15.0509 3.73728C15.7116 3.73728 16.3454 3.99978 16.8126 4.46703C17.2799 4.93428 17.5424 5.56801 17.5424 6.22881C17.5424 6.8896 17.2799 7.52333 16.8126 7.99058C16.3454 8.45783 15.7116 8.72033 15.0509 8.72033C14.3901 8.72033 13.7563 8.45783 13.2891 7.99058C12.8218 7.52333 12.5593 6.8896 12.5593 6.22881C12.5593 5.56801 12.8218 4.93428 13.2891 4.46703C13.7563 3.99978 14.3901 3.73728 15.0509 3.73728Z"
                 fill="#A3A3A3"
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
-      <div className="flex-1 overflow-auto mb-4">
-        {messages.map((message) => (
-          <div key={message.id} className="mb-4">
-            <div className={`flex ${message.sent ? "justify-end" : "justify-start"}`}>
+      <div className="flex-1 overflow-auto  scrollbar-thin px-2">
+        {messages.map((message, index) => (
+          <div key={index} className="mb-4">
+            <div
+              className={`flex ${
+                message.sender_type === "initiator"
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
               <div
-                className={`max-w-xs p-4 rounded-lg ${
-                  message.sent ? "bg-blue-500 text-white" : "bg-gray-700 text-white"
+                className={`max-w-xs p-4 w-[70%] rounded-lg break-words whitespace-pre-wrap font-mono ${
+                  message.sender_type === "initiator"
+                    ? "bg-[#202020] text-white"
+                    : "bg-[#686868] text-white"
                 }`}
               >
-                <p className="mb-2">{message.content}</p>
-                <div className="text-xs text-gray-400 flex justify-between">
-                  <span>{message.time}</span>
-                  {message.sent && (
-                    <span className="text-blue-200 flex items-center">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                    </span>
-                  )}
+                <p className="mb-2">{message?.text}</p>
+                <div className="text-xs text-gray-400 flex justify-end">
+                  <span>{formatLocalTime(message?.timestamp)}</span>
                 </div>
               </div>
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="relative flex items-center border-t border-gray-700 pt-4 mt-4">
-      <div className="absolute left-2">
-      <label htmlFor="file-upload" className="cursor-pointer">
-        <FiPaperclip className="cursor-pointer" />
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        className="hidden"
-      />
-    </div>
+        <div className="absolute left-2 text-[#fff]">
+          <label htmlFor="file-upload" className="cursor-pointer">
+            <FiPaperclip className="cursor-pointer" />
+          </label>
+          <input id="file-upload" type="file" className="hidden" />
+        </div>
         <input
           type="text"
           placeholder="Написать сообщение..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
           className="w-full p-2 px-8 rounded bg-gray-700 placeholder-gray-400 text-white"
         />
-        <button className="ml-2 p-2 rounded bg-gray-700 hover:bg-blue-500">
+        <button
+          onClick={sendMessage}
+          className="ml-2 p-2 rounded bg-gray-700 hover:bg-blue-500"
+        >
           <svg
             className="w-6 h-6 text-white"
             fill="none"

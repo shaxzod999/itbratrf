@@ -2,24 +2,27 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { register } from "../../app/reducers/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { RiCloseLargeLine } from "react-icons/ri";
+import "./register.css";
+import logo from "../../assets/logo.png";
 
 const validationSchema = Yup.object({
   username: Yup.string()
-    .required("Username is required")
-    .matches(/^[a-zA-Z0-9]+$/, "Username can only contain letters and numbers"),
-  firstName: Yup.string().required("First Name is required"),
-  lastName: Yup.string().required("Last Name is required"),
+    .required("Имя пользователя обязательно")
+    .matches(
+      /^[a-zA-Z0-9]+$/,
+      "Имя пользователя может содержать только буквы и цифры."
+    ),
+  first_name: Yup.string().required("Имя обязательно"),
+  last_name: Yup.string().required("Фамилия обязательна"),
   email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+    .email("Неверный адрес электронной почты")
+    .required("Требуется адрес электронной почты"),
   password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
-  confirmPassword: Yup.string()
-    .required("Confirm Password is required")
-    .oneOf([Yup.ref("password"), null], "Passwords must match"),
+    .required("Требуется пароль")
+    .min(8, "Пароль должен содержать не менее 8 символов."),
 });
 
 export default function Register() {
@@ -28,14 +31,15 @@ export default function Register() {
   const [usernameErr, setUsernameErr] = useState("");
   const [emailErr, setEmailErr] = useState("");
   const handleSubmit = (values) => {
+    console.log(values);
     dispatch(
       register({
         username: values.username,
-        first_name: values.firstName,
-        last_name: values.lastName,
+        first_name: values.first_name,
+        last_name: values.last_name,
         email: values.email,
         password: values.password,
-        confirm_password: values.confirmPassword,
+        confirm_password: values.confirm_password,
       })
     )
       .then((action) => {
@@ -52,120 +56,134 @@ export default function Register() {
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-main-black">
+    <div className="relative flex items-center justify-center w-screen h-screen bg-register">
+      <Link to={"/"}>
+        <div className="absolute cursor-pointer top-5 left-10">
+          <img className="w-[200px] h-[30px]" src={logo} alt="logo" />
+        </div>
+      </Link>
+      <Link to={"/"}>
+        <RiCloseLargeLine
+          className="absolute cursor-pointer top-5 right-5"
+          color="red"
+          size={30}
+        />
+      </Link>
       <Formik
         initialValues={{
           username: "",
-          firstName: "",
-          lastName: "",
+          first_name: "",
+          last_name: "",
           email: "",
           password: "",
-          confirmPassword: "",
+          confirm_password: "",
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {() => (
-          <Form className="p-10 bg-[#101010] rounded flex justify-center items-center flex-col shadow-2xl shadow-main-red">
-            <p className="mb-5 text-3xl uppercase text-main-white">
-              Регистрация
+          <Form className="absolute top-20 left-10 md:w-[40%] w-[80%] h-[70%] md:h-[85%] py-5 md:px-5 px-2 bg-main-white rounded-2xl flex justify-center items-center flex-col">
+            <p className="mb-3 text-[clamp(16px,3vw,28px)] uppercase text-main-black">
+              Добро пожаловать!
             </p>
-
-            <div className="mb-5 w-80">
+            <span className="text-main-black text-[clamp(12px,2vw,16px)] font-light text-center">
+              Платформа по поиску команд и проектов ITBRAT
+            </span>
+            <div className="mb-3 w-[90%] mt-5">
               <Field
                 type="text"
                 name="username"
-                className="p-3 w-full focus:border-purple-700 rounded border-2 outline-none"
+                className="w-full p-1 border-2 rounded outline-none md:p-2 focus:border-red-950"
                 placeholder="Имя пользователя"
               />
               <p className="text-main-red">{usernameErr}</p>
               <ErrorMessage
                 name="username"
                 component="div"
-                className="text-red-500"
+                className="text-red-500 text-[10px]"
               />
             </div>
 
-            <div className="mb-5 w-80">
+            <div className="mb-3 w-[90%]">
               <Field
                 type="text"
-                name="firstName"
-                className="p-3 w-full focus:border-purple-700 rounded border-2 outline-none"
+                name="first_name"
+                className="w-full p-1 border-2 rounded outline-none md:p-2 focus:border-red-950"
                 placeholder="Имя"
               />
               <ErrorMessage
-                name="firstName"
+                name="first_name"
                 component="div"
-                className="text-red-500"
+                className="text-red-500 text-[10px]"
               />
             </div>
 
-            <div className="mb-5 w-80">
+            <div className="mb-3 w-[90%]">
               <Field
                 type="text"
-                name="lastName"
-                className="p-3 w-full focus:border-purple-700 rounded border-2 outline-none"
+                name="last_name"
+                className="w-full p-1 border-2 rounded outline-none md:p-2 focus:border-red-950"
                 placeholder="Фамилия"
               />
               <ErrorMessage
-                name="lastName"
+                name="last_name"
                 component="div"
-                className="text-red-500"
+                className="text-red-500 text-[10px]"
               />
             </div>
 
-            <div className="mb-5 w-80">
+            <div className="mb-3 w-[90%]">
               <Field
                 type="email"
                 name="email"
-                className="p-3 w-full focus:border-purple-700 rounded border-2 outline-none"
+                className="w-full p-1 border-2 rounded outline-none md:p-2 focus:border-red-950"
                 placeholder="Email"
               />
               <p className="text-main-red">{emailErr}</p>
               <ErrorMessage
                 name="email"
                 component="div"
-                className="text-red-500"
+                className="text-red-500 text-[10px]"
               />
             </div>
 
-            <div className="mb-5 w-80">
+            <div className="mb-3 w-[90%]">
               <Field
                 type="password"
                 name="password"
-                className="p-3 w-full focus:border-purple-700 rounded border-2 outline-none"
+                className="w-full p-1 border-2 rounded outline-none md:p-2 focus:border-red-950"
                 placeholder="Пароль"
               />
               <ErrorMessage
                 name="password"
                 component="div"
-                className="text-red-500"
+                className="text-red-500 text-[10px]"
               />
             </div>
 
-            <div className="mb-5 w-80">
+            <div className="mb-3 w-[90%]">
               <Field
                 type="password"
-                name="confirmPassword"
-                className="p-3 w-full focus:border-purple-700 rounded border-2 outline-none"
+                name="confirm_password"
+                className="w-full p-1 border-2 rounded outline-none md:p-2 focus:border-red-950"
                 placeholder="Повтор пароля"
               />
               <ErrorMessage
-                name="confirmPassword"
+                name="confirm_password"
                 component="div"
-                className="text-red-500"
+                className="text-red-500 text-[10px]"
               />
             </div>
 
             <button
               type="submit"
-              className="bg-main-red hover:bg-purple-900 text-white font-bold p-2 rounded w-80"
+              className="bg-[#560303] text-white font-semibold p-2 rounded w-[90%]"
             >
-              Регистрация
+              Зарегистрироваться
             </button>
 
-            <a className="mt-2" href="/sign-in">
-              <span className="text-main-white">Есть аккаунт? </span>
+            <a className="mt-2 flex gap-[5px]" href="/sign-in">
+              <span className="text-main-black">Уже есть аккаунт?</span>
               <span className="text-main-red">Войдите</span>
             </a>
           </Form>

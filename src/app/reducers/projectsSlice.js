@@ -9,7 +9,27 @@ const initialState = {
   showProjects: [],
   clickLike: false,
   projectInfo: [],
+  getFavoriteProjects: [],
 };
+
+export const setFavoriteProjects = createAsyncThunk(
+  "projects/setFavoriteProjects",
+  async (_, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(`${baseURL}/fovorite/project/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data);
+      return response.data;
+      
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 export const getProjectsCategory = createAsyncThunk(
   "projects/getProjectsCategory",
@@ -133,6 +153,70 @@ export const postLike = createAsyncThunk(
   }
 );
 
+export const searchWithProjectName = createAsyncThunk("projects/search", async (name, thunkAPI) => {
+  try {
+    const response =await axios.get(`${baseURL}/project/?name=${name}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+    return response.data
+    
+  } catch (error) {
+    thunkAPI.rejectWithValue(error)
+  }
+});
+
+export const searchWithFavoriteProjectName = createAsyncThunk("projects/favoritesearch", async (name, thunkAPI) => {
+  try {
+    const response =await axios.get(`${baseURL}/fovorite/project/?project_name=${name}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+    console.log(response.data);
+    
+    return response.data
+    
+    
+  } catch (error) {
+    thunkAPI.rejectWithValue(error)
+  }
+});
+
+export const deleteLikeFavoriteProject = createAsyncThunk("projects/deleteFavoriteProject", async (id, thunkAPI) => {
+  try {
+    const response =await axios.delete(`${baseURL}/favorite/project/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    thunkAPI.rejectWithValue(error)
+  }
+})
+export const getProjectByCategoryId = createAsyncThunk("projects/getProjectByCategoryId", async (id, thunkAPI) => {
+  try {
+    const response =await axios.get(`${baseURL}/category/${id}/project/`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    thunkAPI.rejectWithValue(error)
+  }
+})
+
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
@@ -165,6 +249,47 @@ const projectsSlice = createSlice({
       state.showProjects = action.payload;
     });
     builder.addCase(getProjects.rejected, (state) => {
+      state.status = "rejected";
+    });
+    builder.addCase(searchWithProjectName.pending, (state) => {
+      state.status = "pending";
+    });
+    builder.addCase(searchWithProjectName.fulfilled, (state, action) => {
+      state.status = "success";
+      state.showProjects = action.payload;
+    });
+    builder.addCase(searchWithProjectName.rejected, (state) => {
+      state.status = "rejected";
+    });
+    builder.addCase(getProjectByCategoryId.pending, (state) => {
+      state.status = "pending";
+    });
+    builder.addCase(getProjectByCategoryId.fulfilled, (state, action) => {
+      state.status = "success";
+      state.showProjects = action.payload;
+    });
+    builder.addCase(getProjectByCategoryId.rejected, (state) => {
+      state.status = "rejected";
+    });
+    builder.addCase(setFavoriteProjects.pending, (state) => {
+      state.status = "pending";
+    });
+    builder.addCase(setFavoriteProjects.fulfilled, (state, action) => {
+      state.status = "success";
+      state.getFavoriteProjects = action.payload;
+    });
+    builder.addCase(setFavoriteProjects.rejected, (state) => {
+      state.status = "rejected";
+    });
+    builder.addCase(searchWithFavoriteProjectName.pending, (state) => {
+      state.status = "pending";
+    });
+    builder.addCase(searchWithFavoriteProjectName.fulfilled, (state, action) => {
+      state.status = "success";
+      state.getFavoriteProjects = action.payload;
+
+    });
+    builder.addCase(searchWithFavoriteProjectName.rejected, (state) => {
       state.status = "rejected";
     });
     builder.addCase(postLike.pending, (state) => {

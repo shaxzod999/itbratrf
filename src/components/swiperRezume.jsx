@@ -34,7 +34,7 @@ export default function SwiperRezume() {
       >
        {
         Rezume1Data.map((item)=>(<SwiperSlide key={uuidv4()}>
-            <div className="py-3 mb-10 ml-3  h-[457px] w-[277px]  overflow-hidden cursor-pointer">
+            <div className="py-3 mb-10 ml-3 h-[457px] w-[277px]  overflow-hidden cursor-pointer">
                 <div
                   className="w-full h-full bg-cover bg-center rounded-2xl"
                   style={{

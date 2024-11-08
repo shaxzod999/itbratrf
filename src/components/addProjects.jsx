@@ -23,6 +23,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
   };
 
   const onSubmit = (data) => {
+    console.log(data);
     if (data.image && data.image[0]) {
       dispatch(
         addProjects({ ...data, valuta: currency, image: data.image[0] })
@@ -33,17 +34,17 @@ export default function AddProjects({ stateValue, setStateValue }) {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#1E1E1E] rounded-lg mt-2 p-3">
+    <div className="w-full md:h-[calc(100vh-100px)] overflow-y-scroll xl:overflow-hidden scrollbar-thin bg-[#1E1E1E] rounded-lg mt-2 p-3">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col">
-        <div className="w-full flex xl:flex-row flex-col">
+        <div className="w-full flex xl:flex-row flex-col ">
           <div className="w-1/2">
-            <h3 className="text-main-white text-[clamp(16px,3vw,24px)] font-bold">
+            <h3 className="text-main-white text-[clamp(10px,3vw,24px)] font-bold">
               Новый проект
             </h3>
             <div className="w-full relative">
-              <div className="w-full max-w-[298px] h-[335px] bg-[#2E2E2E] flex items-center justify-center rounded-xl">
+              <div className="md:w-full w-[200%] md:max-w-[298px]  md:h-[255px] h-[150px] bg-[#2E2E2E] flex items-center justify-center rounded-xl">
                 <label htmlFor="fileInput" className="cursor-pointer">
-                  <img src={addPhoto} alt="add" />
+                  <img className="w-[60%] h-[60%] mx-auto" src={addPhoto} alt="add" />
                 </label>
               </div>
               <input
@@ -56,7 +57,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
             </div>
           </div>
           <div className="">
-            <div className="p-6 rounded-xl w-full max-w-[400px] text-white">
+            <div className="py-6 rounded-xl w-full max-w-[400px] text-white">
               <div className="mb-4 flex items-center">
                 <label className="block mt-3 text-[clamp(8px,3vw,14px)]">
                   Название:
@@ -65,7 +66,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
                   required
                   type="text"
                   placeholder="Введите название проекта"
-                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none"
+                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none text-[clamp(8px,3vw,14px)]"
                   {...register("name")}
                 />
               </div>
@@ -78,7 +79,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
                   required
                   type="text"
                   placeholder=""
-                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none"
+                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none text-[clamp(8px,3vw,14px)]"
                   {...register("contact")}
                 />
               </div>
@@ -91,13 +92,13 @@ export default function AddProjects({ stateValue, setStateValue }) {
                     required
                     type="number"
                     placeholder="Введите сумму"
-                    className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none"
+                    className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none text-[clamp(8px,3vw,14px)]"
                     {...register("price")}
                   />
                   <button
                     type="button"
                     onClick={() => setCurrency("1")}
-                    className={`ml-2 px-2 py-1 rounded-lg ${
+                    className={`ml-2 px-2 py-1 rounded-lg text-[clamp(8px,3vw,14px)] ${
                       currency === "1"
                         ? "bg-red-600"
                         : "bg-transparent border border-red-600"
@@ -108,7 +109,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
                   <button
                     type="button"
                     onClick={() => setCurrency("2")}
-                    className={`ml-2 px-2 py-1 rounded-lg ${
+                    className={`ml-2 px-2 py-1 rounded-lg text-[clamp(8px,3vw,14px)] ${
                       currency === "2"
                         ? "bg-red-600"
                         : "bg-transparent border border-red-600"
@@ -127,7 +128,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
                   required
                   type="text"
                   placeholder="js,python"
-                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none"
+                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none text-[clamp(8px,3vw,14px)]"
                   {...register("skils")}
                 />
               </div>
@@ -137,7 +138,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
                 </label>
                 <select
                   required
-                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none text-md text-gray-400"
+                  className="w-full px-2 py-1 bg-transparent border-b border-gray-500 outline-none text-[clamp(8px,3vw,14px)] text-md text-gray-400"
                   {...register("category")}
                 >
                   <option value="" className="text-md">
@@ -161,7 +162,7 @@ export default function AddProjects({ stateValue, setStateValue }) {
 
           <textarea
             required
-            className="bg-[#2E2E2E] w-full min-h-[265px] text-main-white mt-2 rounded-lg"
+            className="bg-[#2E2E2E] w-full min-h-[205px] text-main-white mt-2 rounded-lg"
             {...register("description")}
           ></textarea>
         </div>

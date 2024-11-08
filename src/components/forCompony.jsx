@@ -1,6 +1,6 @@
 import { FaCheck } from "react-icons/fa";
-
 import bratman from "../assets/bratman.png";
+
 
 export default function ForCompony() {
   return (
@@ -26,7 +26,7 @@ export default function ForCompony() {
           </span>
         </li>
       </ul>
-      <div className="px-10 w-[355px] h-[377px]">
+      <div className="px-10 w-full md:w-[355px] max-h-[577px]">
         <img src={bratman} alt="" />
       </div>
     </div>

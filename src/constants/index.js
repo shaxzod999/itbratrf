@@ -13,34 +13,58 @@ export const NotificationData =[]
 
 export const ServiceData = [
   {
+    id:"1",
     title: "UI разработка",
     price: 50000,
     backgroundImage: project1,
+    view:1.8,
+    likes:50,
+    favorite:true
   },
   {
+    id:"2",
     title: "Разработка интернет магазина",
     price: 5000,
     backgroundImage: project2,
+    view:20,
+    likes:217,
+    favorite:false
   },
   {
+    id:"3",
     title: "Концепция сайта",
     price: 50000,
     backgroundImage: project3,
+    view:3.2,
+    likes:120,
+    favorite:false
   },
   {
+    id:"4",
     title: "UI разработка",
     price: 50000,
     backgroundImage: project1,
+    view:1.8,
+    likes:50,
+    favorite:true
   },
   {
+    id:"5",
     title: "Разработка интернет магазина",
     price: 5000,
     backgroundImage: project2,
+    view:20,
+    likes:217,
+    favorite:false
   },
   {
+    id:"6",
     title: "Концепция сайта",
     price: 50000,
     backgroundImage: project3,
+    view:3.2,
+    likes:120,
+    favorite:false
   },
 ];
 

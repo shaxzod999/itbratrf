@@ -3,10 +3,21 @@ import { Rezume1Data, Rezume2Data } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 
 import "./css/custom.css";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ScrollComponent() {
+
+  const navigate = useNavigate();
+
+  const RESUME = () => {
+    if (localStorage.getItem("accessToken")) {
+      navigate("/profile/resume");
+    } else {
+      navigate("/sign-up");
+    }
+  };
   return (
-    <div className="flex gap-5 ">
+    <div className="h-[850px] flex gap-5">
       <div className="w-full h-[950px] flex flex-col gap-7 rounded-xl overflow-y-scroll scrollbar-rezume-thin">
         {Rezume1Data.map((item) => (
           <div className="relative" key={uuidv4()}>
@@ -17,9 +28,11 @@ export default function ScrollComponent() {
                   <h5 className="text-main-white">{item.name}</h5>
                   <span className="text-second-color">{item.job}</span>
                 </div>
-                <div className="transform hover:translate-x-2 transition-transform ease-in duration-200 cursor-pointer">
-                  <GrLinkNext color="white" size={50} />
-                </div>
+                <button onClick={RESUME}>
+                  <div className="transform hover:translate-x-2 transition-transform ease-in duration-200 cursor-pointer">
+                    <GrLinkNext color="white" size={50} />
+                  </div>
+                </button>
               </div>
             </div>
           </div>
@@ -35,9 +48,11 @@ export default function ScrollComponent() {
                   <h5 className="text-main-white">{item.name}</h5>
                   <span className="text-second-color">{item.job}</span>
                 </div>
-                <div className="transform hover:translate-x-2 transition-transform ease-in duration-200 cursor-pointer">
-                  <GrLinkNext color="white" size={50} />
-                </div>
+                <button onClick={RESUME}>
+                  <div className="transform hover:translate-x-2 transition-transform ease-in duration-200 cursor-pointer">
+                    <GrLinkNext color="white" size={50} />
+                  </div>
+                </button>
               </div>
             </div>
           </div>

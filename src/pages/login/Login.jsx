@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../app/reducers/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { RiCloseLargeLine } from "react-icons/ri";
+import logo from "../../assets/logo.png";
+import "../register/register.css";
 
 export default function Login() {
   const [userName, setUserName] = useState();
@@ -17,8 +20,7 @@ export default function Login() {
     dispatch(login({ username: userName, password })).then((action) => {
       if (action.payload) {
         localStorage.setItem("accessToken", action.payload);
-        navigate("/profile");
-        toast.success("login success", {
+        toast.success("Спасибо! Вы успешно зашли", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -28,8 +30,11 @@ export default function Login() {
           progress: undefined,
           theme: "light",
         });
+        setTimeout(() => {
+          navigate("/role");
+        }, 1500);
       } else {
-        toast.error("This user is not available to the system", {
+        toast.error("Этот пользователь недоступен для системы", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -46,18 +51,30 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <div className="w-screen h-screen flex justify-center items-center bg-main-black">
+    <div className="md:px-[0] px-[20px] bg-register flex justify-center items-center">
+      <div className="relative flex items-center justify-center w-screen h-screen  ">
+        <Link to={"/"}>
+          <div className="absolute cursor-pointer top-5 left-[0] md:left-10">
+            <img className="w-[200px] h-[30px]" src={logo} alt="logo" />
+          </div>
+        </Link>
+        <Link to={"/"}>
+          <RiCloseLargeLine
+            className="absolute cursor-pointer top-5 right-[0] md:right-5"
+            color="red"
+            size={30}
+          />
+        </Link>
         <form
           onSubmit={handleSubmit}
-          className="p-10 bg-[#101010] rounded flex justify-center items-center flex-col shadow-2xl shadow-main-red"
+          className="absolute top-[25%] md:left-[2%] md:w-[35%] w-[100%] py-10 px-6 bg-main-white rounded flex justify-center items-center flex-col"
         >
-          <p className="mb-5 text-3xl uppercase text-main-white">Вход</p>
+          <p className="mb-5 text-3xl uppercase text-main-black">Вход</p>
           <input
             onChange={(e) => setUserName(e.target.value)}
             type="text"
             name="username"
-            className="mb-5 p-3 w-80 focus:border-purple-700 rounded border-2 outline-none"
+            className="mb-5 md:p-3 p-2 w-[95%] focus:border-purple-700 rounded border-2 outline-none"
             placeholder="Имя пользователя"
             required
           />
@@ -65,18 +82,17 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             type="password"
             name="password"
-            className="mb-5 p-3 w-80 focus:border-purple-700 rounded border-2 outline-none"
+            className="mb-5 md:p-3 p-2 w-[95%] focus:border-purple-700 rounded border-2 outline-none"
             placeholder="Пароль"
             required
           />
           <button
-            className="bg-main-red hover:bg-purple-900 text-white font-bold p-2 rounded w-80"
+            className="bg-[#560303] text-white font-bold p-2 rounded w-[95%]"
             id="login"
             type="submit"
           >
             <span>Вход</span>
           </button>
-          
         </form>
       </div>
       <ToastContainer

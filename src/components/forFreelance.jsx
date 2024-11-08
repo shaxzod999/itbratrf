@@ -25,7 +25,7 @@ export default function ForFreelance() {
           </span>
         </li>
       </ul>
-      <div className="px-10 w-[355px] h-[377px]">
+      <div className="px-10 w-full md:w-[355px] max-h-[577px]">
         <img src={bratgirl} alt="" />
       </div>
     </div>

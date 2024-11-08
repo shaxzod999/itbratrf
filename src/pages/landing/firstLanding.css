@@ -1,53 +1,61 @@
-.bg-photo{
-    width: 100%;
-    height: 100%;
-    height: 800px;
-    background-image: url(../../assets/backgoundImage.png);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+.bg-photo {
+  width: 100%;
+  height: 100%;
+  height: 800px;
+  background-image: url(../../assets/backgoundImage.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.bg-texture{
-    width: 100%;
-    /* height: 100vh; */
-    background-image: url(../../assets/backgroundTexture.webp);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+.bg-texture {
+  width: 100%;
+  /* height: 100vh; */
+  background-image: url(../../assets/backgroundTexture.webp);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
   /* background-size: 100%; */
-    /* background-position: center; */
+  /* background-position: center; */
 }
 
-.box-shadow{
-    /* border: 2px solid red; */
-    border-radius: 5px;
-    box-shadow:  3px 3px 20px red;
-    text-shadow: 1px 1px 6px;
+.card-shadow {
+  border-radius: 5px;
+  box-shadow: 10px 10px 20px rgba(255, 0, 0, 0.5); /* Red shadow with offsets to the right and bottom */
 }
-.itbrat-box{
-    border-radius: 5px;
-    box-shadow:-8px 3px 10px red;
+.itbrat-box {
+  border-radius: 5px;
+  box-shadow: -8px 3px 10px red;
+}
+.itbrat-box:hover .hover-ul {
+  opacity: 1;
+  visibility: visible;
+}
+.itbrat-box:hover .girlImg {
+  transform: translateX(-30%); /* Rasmni 20% chap tomonga suradi */
+}
+.itbrat-box:hover .boyImg {
+  transform: translateX(-15%); /* Rasmni 20% chap tomonga suradi */
 }
 
-.direction-box-shadow{
-    border-radius: 10px;
-    box-shadow: 1px 1px 8px red;
+.direction-box-shadow {
+  border-radius: 10px;
+  box-shadow: 1px 1px 8px red;
 }
 
 .scrollbar-custom::-webkit-scrollbar {
-    width: 12px;
-  }
-  
-  .scrollbar-custom::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  
-  .scrollbar-custom::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 6px;
-  }
-  
-  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
+  width: 12px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

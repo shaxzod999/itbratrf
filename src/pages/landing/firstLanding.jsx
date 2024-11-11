@@ -109,7 +109,7 @@ export default function FirstLanding() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-[31px] md:mx-0 mx-20  md:mt-[-300px] mt-[-800px]">
+          <div className="flex flex-col gap-[31px] md:mx-0 mx-20  md:mt-[-500px] mt-[-800px]">
             <button
               onClick={handleSearchProject}
               className="w-full max-w-[346px] h-[70px] text-main-white border-[3px] border-solid border-main-red bg-gray-7800 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-30"
